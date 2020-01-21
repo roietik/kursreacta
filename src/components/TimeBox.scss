@@ -1,0 +1,11 @@
+.TimeBox {
+    border: 1px solid gray;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.inactive {
+    filter: blur(2px) grayscale(1.2);
+}

@@ -1,0 +1,15 @@
+.ProgressBar {
+    border: 1px solid orangered;
+    height: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 5px;
+    div {
+        height: 100%;
+        background: orangered;
+    }
+}
+
+.inactive {
+    filter: blur(2px) grayscale(1.2);
+}

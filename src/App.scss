@@ -1,0 +1,10 @@
+.title {
+    text-transform: capitalize;
+}
+.Clock {
+    color: orangered;
+}
+
+.inactive {
+    filter: blur(2px) grayscale(1.2);
+}
