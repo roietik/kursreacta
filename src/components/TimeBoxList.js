@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TimeBoxCreator from './TimeBoxCreator';
 import TimeBox from './TimeBox';
 import uuid from 'uuid';
-import './TimeBoxList.scss';
+import './sass/TimeBoxList.scss';
 
 class TimeBoxList extends Component {
     state = {

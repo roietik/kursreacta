@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import "./TimeBoxEditor.scss";
+import "./sass/TimeBoxEditor.scss";
 
 class TimeBoxEditor extends Component {
     render() {

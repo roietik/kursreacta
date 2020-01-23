@@ -1,7 +1,7 @@
 import React from 'react';
 import Clock from './Clock';
 import ProgressBar from './ProgressBar';
-import './CurrentTimeBox.scss';
+import './sass/CurrentTimeBox.scss';
 
 const CurrentTimeBox = ({ title, houersLeft, minutesLeft, secondsLeft, isRunning, isPaused, progressInPercent, pausesCount, handleStart, handleStop, togglePause, isEditable, onEdit }) => {
     return(
