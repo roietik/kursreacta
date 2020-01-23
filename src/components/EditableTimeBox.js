@@ -91,16 +91,16 @@ export class EditableTimeBox extends Component {
         const { pausesCount, isPaused, isRunning, elapsedTimeInSeconds, title, totalTimeInMinutes, isEditable } = this.state;
         const totalTimeInSeconds = totalTimeInMinutes * 60;
         const timeLeftInSeconds = totalTimeInSeconds - elapsedTimeInSeconds;
-        const houersLeft = Math.floor(timeLeftInSeconds / (60 ** 2))
-        const minutesLeft = Math.floor((timeLeftInSeconds - (houersLeft * (60 ** 2))) / 60);
-        const secondsLeft = Math.floor((timeLeftInSeconds - (houersLeft * (60 ** 2))) % 60);
+        const hoursLeft = Math.floor(timeLeftInSeconds / (60 ** 2))
+        const minutesLeft = Math.floor((timeLeftInSeconds - (hoursLeft * (60 ** 2))) / 60);
+        const secondsLeft = Math.floor((timeLeftInSeconds - (hoursLeft * (60 ** 2))) % 60);
         const progressInPercent = (elapsedTimeInSeconds / totalTimeInSeconds) * 100.0;
 
-        console.log(`%c ${houersLeft}:${minutesLeft}:${secondsLeft}`, `color: orangered`);
+        console.log(`%c ${hoursLeft}:${minutesLeft}:${secondsLeft}`, `color: orangered`);
         return (
             <>
                 <TimeBoxEditor title={title} totalTimeInMinutes={totalTimeInMinutes} handleTitleChange={this.handleTitleChange} handleTotalTimeInMinutes={this.handleTotalTimeInMinutes} onConfirm={this.onConfirm} isEditable={isEditable} add={true} change={false}/>
-                <CurrentTimeBox totalTimeInMinutes={totalTimeInMinutes} title={title} houersLeft={houersLeft} minutesLeft={minutesLeft} secondsLeft={secondsLeft} pausesCount={pausesCount} isPaused={isPaused} isRunning={isRunning} progressInPercent={progressInPercent} handleStart={this.handleStart} handleStop={this.handleStop} togglePause={this.togglePause} onEdit={this.onEdit} isEditable={isEditable} />
+                <CurrentTimeBox totalTimeInMinutes={totalTimeInMinutes} title={title} hoursLeft={hoursLeft} minutesLeft={minutesLeft} secondsLeft={secondsLeft} pausesCount={pausesCount} isPaused={isPaused} isRunning={isRunning} progressInPercent={progressInPercent} handleStart={this.handleStart} handleStop={this.handleStop} togglePause={this.togglePause} onEdit={this.onEdit} isEditable={isEditable} />
             </>
         )
     }

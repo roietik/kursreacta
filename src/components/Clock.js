@@ -4,9 +4,9 @@ import "../sass/Clock.scss";
 export class Clock extends Component {
     render() {
 
-        const {houers, minutes, seconds, inactive} = this.props;
+        const {hours, minutes, seconds, inactive} = this.props;
         return (
-        <h2 className={`Clock ${inactive}`}>Pozostało: {`${houers}:${minutes}:${seconds}`}</h2>
+        <h2 className={`Clock ${inactive}`}>Pozostało: {`${hours}:${minutes}:${seconds}`}</h2>
         )
     }
 }
