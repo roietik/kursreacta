@@ -19,14 +19,16 @@ class TimeBoxCreator extends Component {
         this.setState({
             title: e.target.value
         })
-        console.log(e.target.value);
+        console.log(`%c ${e.target.value}`, `color: orangered`);
+
     }
 
     handleTotalTimeInMinutes = e => {
         this.setState({
             totalTimeInMinutes: e.target.value
         })
-        console.log(e.target.value);
+        console.log(`%c ${e.target.value}`, `color: orangered`);
+
     }
 
     handleSubmit = e => {
@@ -36,7 +38,8 @@ class TimeBoxCreator extends Component {
             title: null,
             totalTimeInMinutes: null
         })    
-        console.log('refs:', this.titleInput.current.value, this.timeInput.current.value)
+        console.log(`%c refs: ${this.titleInput.current.value}, ${this.timeInput.current.value}`, `color: orangered`);
+
         this.titleInput.current.value = "";
         this.timeInput.current.value = "";
     }

@@ -13,16 +13,20 @@ class TimeBoxList extends Component {
         ],
         title: null,
         totalTimeInMinutes: null,
+        isEdit: null
 
     }
 
     handleEdit = (indexToUpdate, updatedTimebox) => {
-        console.log('indexToUpdate: ',indexToUpdate);
-        console.log('updatedTimebox: ',updatedTimebox);
+        console.log(`%c indexToUpdate: ${indexToUpdate}`, `color: orangered`);
+        console.log(`%c updatedTimebox: ${updatedTimebox}`, `color: orangered`);
+
         this.setState(prevState => {
             const timeboxes = prevState.timeboxes.map( (timebox, index) => index === indexToUpdate ? updatedTimebox : timebox)
-            return {timeboxes};
+            return {timeboxes, isEdit: true};
         })
+        console.log(`%c isEdit: ${this.state.isEdit}`, `color: orangered`);
+
     }
 
     handleDelete = indexToRemove => {
@@ -51,14 +55,16 @@ class TimeBoxList extends Component {
         this.setState({
             title: e.target.value
         })
-        console.log(e.target.value);
+        console.log(`%c ${e.target.value}`, `color: orangered`);
+
     }
 
     handleTotalTimeInMinutes = e => {
         this.setState({
             totalTimeInMinutes: e.target.value
         })
-        console.log(e.target.value);
+        console.log(`%c ${e.target.value}`, `color: orangered`);
+
     }
 
     render() {
@@ -67,7 +73,7 @@ class TimeBoxList extends Component {
                 <TimeBoxCreator onCreate={this.onCreate} isEditable={true}  handleTitleChange={this.handleTitleChange} handleTotalTimeInMinutes={this.handleTotalTimeInMinutes}  />
                 {
                     this.state.timeboxes.map((timebox, i) => {
-                       return  <TimeBox id={timebox.id} key={timebox.id} title={timebox.title} totalTimeInMinutes={timebox.totalTimeInMinutes} handleDelete={() => this.handleDelete(i)} handleEdit={() => this.handleEdit(i, {...timebox, title: "Updated TimeBox"})} />
+                       return  <TimeBox id={timebox.id} key={timebox.id} title={timebox.title} totalTimeInMinutes={timebox.totalTimeInMinutes} handleDelete={() => this.handleDelete(i)} handleEdit={() => this.handleEdit(i, {...timebox, id: uuid.v4(),title: "Updated TimeBox", totalTimeInMinutes: 11})} />
                     })
                 }
             </>

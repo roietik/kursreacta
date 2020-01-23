@@ -77,14 +77,14 @@ export class EditableTimeBox extends Component {
         this.setState({
             title: e.target.value
         })
-        console.log(e.target.value);
+        console.log(`%c ${e.target.value}`, `color: orangered`);
     }
 
     handleTotalTimeInMinutes = e => {
         this.setState({
             totalTimeInMinutes: e.target.value
         })
-        console.log(e.target.value);
+        console.log(`%c ${e.target.value}`, `color: orangered`);
     }
 
     render() {
