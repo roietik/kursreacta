@@ -13,9 +13,9 @@ class TimeBoxList extends Component {
         ],
         title: null,
         totalTimeInMinutes: null,
-        isEdit: null
-
+        isEdit: false
     }
+
 
     handleEdit = (indexToUpdate, updatedTimebox) => {
         console.log(`%c indexToUpdate: ${indexToUpdate}`, `color: orangered`);
@@ -23,11 +23,12 @@ class TimeBoxList extends Component {
 
         this.setState(prevState => {
             const timeboxes = prevState.timeboxes.map( (timebox, index) => index === indexToUpdate ? updatedTimebox : timebox)
-            return {timeboxes, isEdit: true};
-        })
-        console.log(`%c isEdit: ${this.state.isEdit}`, `color: orangered`);
+            const isEdit = prevState.timeboxes.map( (timebox, index) => index === indexToUpdate ? true : false)
 
+            return {timeboxes, isEdit };
+        })
     }
+
 
     handleDelete = indexToRemove => {
         this.setState(prevState => {
@@ -73,7 +74,7 @@ class TimeBoxList extends Component {
                 <TimeBoxCreator onCreate={this.onCreate} isEditable={true}  handleTitleChange={this.handleTitleChange} handleTotalTimeInMinutes={this.handleTotalTimeInMinutes}  />
                 {
                     this.state.timeboxes.map((timebox, i) => {
-                       return  <TimeBox id={timebox.id} key={timebox.id} title={timebox.title} totalTimeInMinutes={timebox.totalTimeInMinutes} handleDelete={() => this.handleDelete(i)} handleEdit={() => this.handleEdit(i, {...timebox, id: uuid.v4(),title: "Updated TimeBox", totalTimeInMinutes: 11})} />
+                       return  <TimeBox id={timebox.id} key={timebox.id} title={timebox.title} totalTimeInMinutes={timebox.totalTimeInMinutes} handleDelete={() => this.handleDelete(i)} handleEdit={() => this.handleEdit(i, {...timebox, id: uuid.v4(),title: "Updated TimeBox", totalTimeInMinutes: 11})} isEdit={this.state.isEdit} index={i}/>
                     })
                 }
             </>
