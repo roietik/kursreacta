@@ -1,14 +1,15 @@
 import React from 'react';
 import './App.scss';
-import TimeBoxEditor from './components/TimeBoxEditor';
-import TimeBox from './components/TimeBox';
+import EditableTimeBox from './components/EditableTimeBox';
+import TimeBoxList from './components/TimeBoxList';
+
 
 function App() {
   return (
     <div className="App">
-      <h1 className="title">React</h1>
-      <TimeBoxEditor/>
-      <TimeBox/>
+      <h1 className="title">Timer</h1>
+      <EditableTimeBox/>
+      <TimeBoxList/>
     </div>
   );
 }

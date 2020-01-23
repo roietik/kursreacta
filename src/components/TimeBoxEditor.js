@@ -1,13 +1,17 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import "./TimeBoxEditor.scss";
 
-export class TimeBoxEditor extends Component {
+class TimeBoxEditor extends Component {
     render() {
+        const {title, totalTimeInMinutes, handleTitleChange, handleTotalTimeInMinutes, onConfirm, isEditable, onCreate, changes, add} = this.props;
         return (
-            <div className="TimeBoxEditor">
-                <label htmlFor="title">Co robisz?<input name="title" placeholder="Uczę się skrótów klawiszowych" type="text" /></label>
-                <label htmlFor="num">Ile minut?<input name="num" disabled value="25" type="number" /></label>
-                <button>Zacznij</button>
+            <div className={`TimeBoxEditor ${!isEditable ? "inactive" : ""}`}>
+                <label disabled={!isEditable} htmlFor="title">Co robisz?<input name="title" defaultValue={title} onChange={handleTitleChange} type="text" /></label>
+                <br/>
+                <label disabled={!isEditable} htmlFor="num">Ile minut?<input name="num" defaultValue={totalTimeInMinutes} onChange={handleTotalTimeInMinutes} type="number" /></label>
+                <br/>
+                <button className={changes ? 'changesNone' : "" } disabled={!isEditable} onClick={onConfirm}>Zatwierdź zmiany</button>
+                <button className={add ? 'addNone' : ""}  onClick={onCreate} >Dodaj</button>
             </div>
         )
     }

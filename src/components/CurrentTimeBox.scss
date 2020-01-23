@@ -1,14 +1,9 @@
-.TimeBoxEditor {
-    text-align: center;
-    border-radius: 10px;
+.CurrentTimeBox {
     border: 1px solid gray;
     padding: 20px;
     margin-bottom: 20px;
-    input {
-     min-width: 60%;
-     font-size: 16px;
-     margin-left: 20px;   
-    }
+    border-radius: 10px;
+    text-align: center;
     button {
         max-width: 160px;
         font-size: 16px;
@@ -16,10 +11,9 @@
         border: 1px solid orangered;
         background: white;
         border-radius: 10px;
-        margin-top: 10px;
     }
 }
 
-.addNone, .changesNone {
-    display: none;
+.inactive {
+    filter: blur(2px) grayscale(1.2);
 }
