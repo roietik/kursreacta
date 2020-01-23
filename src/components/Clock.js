@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import "./sass/Clock.scss";
+import "../sass/Clock.scss";
 
 export class Clock extends Component {
     render() {

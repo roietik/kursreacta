@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import TimeBoxEditor from './TimeBoxEditor';
 import uuid from 'uuid';
-import './sass/TimeBoxCreator.scss';
+import '../sass/TimeBoxCreator.scss';
 
 class TimeBoxCreator extends Component {
     constructor(props) {
