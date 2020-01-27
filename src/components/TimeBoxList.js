@@ -1,23 +1,18 @@
 import React, { Component } from 'react';
+import AxiosTimeboxesApi from "../api/AxiosTimeBoxesApi";
+
 import TimeBoxEditor from './TimeBoxEditor';
 import TimeBoxCreator from './TimeBoxCreator';
 import CurrentTimeBox from './CurrentTimeBox';
 import TimeBox from './TimeBox';
+
 import '../sass/TimeBoxList.scss';
 
 class TimeBoxList extends Component {
     state = {
-        timeboxes: [
-            { id: "box-0", title: "TimeBox03524631", totalTimeInMinutes: 25 },
-            { id: "box-1", title: "TimeBox02567", totalTimeInMinutes: 5 },
-            { id: "box-2", title: "TimeBox09563", totalTimeInMinutes: 55 },
-            { id: "box-3", title: "TimeBox035255", totalTimeInMinutes: 44 },
-            { id: "box-4", title: "TimeBox02567", totalTimeInMinutes: 5 },
-            { id: "box-5", title: "TimeBox0963", totalTimeInMinutes: 2 },
-            { id: "box-6", title: "TimeBox03566", totalTimeInMinutes: 9 },
-            { id: "box-7", title: "TimeBox02567", totalTimeInMinutes: 5 },
-            { id: "box-8", title: "TimeBox09563", totalTimeInMinutes: 3 }
-        ],
+        timeboxes: [],
+        loading: true,
+        error: null,
         add: { title: "", totalTimeInMinutes: "" },
         editor: {index: "", id: "", title: "", totalTimeInMinutes: "" },
         current: {index: "", id: "", title: "", totalTimeInMinutes: 0 },
@@ -28,6 +23,19 @@ class TimeBoxList extends Component {
         isRunning: false,
         isPaused: false,
         isTimerStart: false,
+    }
+
+    componentDidMount() {
+        AxiosTimeboxesApi.getAllTimeBoxes()
+            .then(
+                timeboxes => {
+                    this.setState({timeboxes})
+                    console.log('%c Table from AxiosTimeboxesApi: ', 'color: orangered');
+                    console.table(timeboxes)
+                }
+            )
+            .catch(error => this.setState({error}))
+            .then(() => this.setState({loading: false}))
     }
 
     onCreate = timebox => {

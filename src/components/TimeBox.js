@@ -6,7 +6,7 @@ export class TimeBox extends Component {
     render() {
 
         const { 
-            basicProps: { id, index, title, totalTimeInMinutes, handleDelete, handleEdit, handleActivTimer }
+            timeBoxProps: { id, index, title, totalTimeInMinutes, handleDelete, handleEdit, handleActivTimer }
         } = this.props;
 
         return (
