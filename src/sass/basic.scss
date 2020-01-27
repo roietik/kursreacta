@@ -1,0 +1,16 @@
+@import url(https://fonts.googleapis.com/css?family=Oxygen|Rubik:300);
+$base-font: 'Rubik', Arial, sans-serif;
+$base-font-size: 12px;
+$white: #DADADB;
+$black: #18191d;
+$drk-gray: #1F2025;
+$lt-gray: #353741;
+$lt-orange: #da3f0c;
+$orange: #472723;
+
+@mixin bg-gradient {
+    background: linear-gradient(135deg, $lt-orange, $orange);
+  }
+  @mixin shadow {
+    box-shadow: 0 16px 28px 0 rgba(0,0,0,.8),0 25px 55px 0 rgba(0,0,0,0.21);
+  }

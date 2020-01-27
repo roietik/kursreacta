@@ -1,22 +1,31 @@
 import React, { Component } from 'react';
-import TimeBoxEditor from './TimeBoxEditor';
 import '../sass/TimeBox.scss';
 
 export class TimeBox extends Component {
+
     render() {
-        
-        const { title, totalTimeInMinutes, handleEdit, handleDelete, id, isEdit, index } = this.props;
+
+        const { 
+            basicProps: { id, index, title, totalTimeInMinutes, handleDelete, handleEdit, handleActivTimer }
+        } = this.props;
 
         return (
-            <div className="time-box">
-                <p>ID: {id}</p>
-                <p>Title: {title}</p>
-                <p>Time: {totalTimeInMinutes}</p>
-                <button onClick={handleEdit}>Edytuj</button>
-                <button onClick={handleDelete}>Usuń</button>
+            <div className="TimeBox">
+
+                <h1>TimeBox</h1>
+                <div className="status">
+                    <p>ID: {id}</p>
+                    <p>Index: {index}</p>
+                    <p>Title: {title}</p>
+                    <p>Time: {totalTimeInMinutes}</p>
+                </div>
+                <div className="actions">
+                    <button onClick={handleActivTimer}>Dalej</button>
+                    <button onClick={handleEdit}>Edytuj</button>
+                    <button onClick={handleDelete}>Usuń</button>
+                </div>
+
                 <div className="separator"></div>
-                <TimeBoxEditor isEditable={isEdit[index]}/>
-                {console.log(`%c ${index}: ${isEdit[index]}`, `color: orangered`)}
             </div>
         )
     }

@@ -1,0 +1,31 @@
+@import "./basic.scss";
+
+.TimeBoxList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 15px;
+    .content {
+        @include shadow;
+        width: 420px;
+        background-color: $drk-gray;
+        color: $white;
+        border-radius: 10px;
+        padding: 10px;
+
+    }
+    .sidebar {
+        position: sticky;
+        top: 20px;
+        
+        @include shadow;
+        width: 420px;
+        max-height: 744px;
+
+        background-color: $drk-gray;
+        color: $white;
+        border-radius: 10px;
+        padding: 10px;
+
+    }
+}

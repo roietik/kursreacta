@@ -4,6 +4,7 @@ import "../sass/ProgressBar.scss";
 export class ProgressBar extends Component {
     render() {
         const {progress, inactive} = this.props;
+
         return (
             <div className={`ProgressBar ${inactive}`}>
                 <div style={{width: `${progress}%`}}>

@@ -1,9 +1,42 @@
-.time-box {
+
+.TimeBox {
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 10px;
     border: 1px solid orangered;
     .separator {
         margin-top: 20px;
+    }
+    .status {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 10px;
+        grid-row-gap: 15px;
+        p {
+            border: 1px solid orangered;
+            border-radius: 10px;
+            padding: 4px 8px;
+            text-align: center;
+            margin: 0;
+        }
+    }
+    .actions {
+        margin-right: 0;
+        margin-left: auto;
+        display: block;
+        max-width: 100%;
+        text-align: right;
+
+        button {
+            max-width: 160px;
+            font-size: 16px;
+            border: 1px solid orangered;
+            background: white;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            line-height: 24px;
+            margin-left: 10px;
+        }
     }
 }

@@ -2,16 +2,15 @@ import React, {Component} from 'react';
 import "../sass/TimeBoxEditor.scss";
 
 class TimeBoxEditor extends Component {
+
     render() {
-        const {title, totalTimeInMinutes, handleTitleChange, handleTotalTimeInMinutes, onConfirm, isEditable, onCreate, changes, add} = this.props;
+        const {title, totalTimeInMinutes, handleTitleChange, handleTotalTimeInMinutesChange, confirmChanges, isEditorEditable } = this.props;
         return (
-            <div className={`TimeBoxEditor ${!isEditable ? "inactive" : ""}`}>
-                <label disabled={!isEditable} htmlFor="title">Co robisz?<input name="title" defaultValue={title} onChange={handleTitleChange} type="text" /></label>
-                <br/>
-                <label disabled={!isEditable} htmlFor="num">Ile minut?<input name="num" defaultValue={totalTimeInMinutes} onChange={handleTotalTimeInMinutes} type="number" /></label>
-                <br/>
-                <button className={changes ? 'changesNone' : "" } disabled={!isEditable} onClick={onConfirm}>Zatwierdź zmiany</button>
-                <button className={add ? 'addNone' : ""}  onClick={onCreate} >Dodaj</button>
+            <div className={`TimeBoxEditor ${!isEditorEditable ? "inactive" : ""}`}>
+                <h1 className="title">TimeBoxEditor</h1>
+                <label htmlFor="title">Co robisz?{title}<input disabled={!isEditorEditable} name="title" value={title} onChange={handleTitleChange} type="text" /></label>
+                <label htmlFor="num">Ile minut? {totalTimeInMinutes}<input disabled={!isEditorEditable} name="num" value={totalTimeInMinutes} onChange={handleTotalTimeInMinutesChange} type="number" /></label>
+                <button disabled={!isEditorEditable} onClick={confirmChanges}>Zapisz</button>
             </div>
         )
     }
