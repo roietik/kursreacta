@@ -6,7 +6,7 @@ export class TimeBox extends Component {
     render() {
 
         const { 
-            timeBoxProps: { id, index, title, totalTimeInMinutes, handleDelete, handleEdit, handleActivTimer }
+            timeBoxProps: { id, index, title, totalTimeInMinutes, removeTimeBox, editTimeBox, handleActivTimer }
         } = this.props;
 
         return (
@@ -21,8 +21,8 @@ export class TimeBox extends Component {
                 </div>
                 <div className="actions">
                     <button onClick={handleActivTimer}>Dalej</button>
-                    <button onClick={handleEdit}>Edytuj</button>
-                    <button onClick={handleDelete}>Usuń</button>
+                    <button onClick={editTimeBox}>Edytuj</button>
+                    <button onClick={removeTimeBox}>Usuń</button>
                 </div>
 
                 <div className="separator"></div>

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import uuid from 'uuid';
 import '../sass/TimeBoxCreator.scss';
 
 class TimeBoxCreator extends Component {
@@ -11,14 +10,7 @@ class TimeBoxCreator extends Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        this.props.onCreate({ id: uuid.v4()+"-creator", title: this.titleInput.current.value, totalTimeInMinutes: this.timeInput.current.value });
-        this.setState({
-            add: {
-                title: null,
-                totalTimeInMinutes: null
-            }
-        })
-
+        this.props.addTimeBox({title: this.titleInput.current.value, totalTimeInMinutes: this.timeInput.current.value});
         this.titleInput.current.value = "";
         this.timeInput.current.value = "";
     }

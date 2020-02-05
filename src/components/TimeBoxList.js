@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import AxiosTimeboxesApi from "../api/AxiosTimeBoxesApi";
+import TimeBoxApi from "../api/AxiosTimeBoxesApi";
 
 import TimeBoxEditor from './TimeBoxEditor';
 import TimeBoxCreator from './TimeBoxCreator';
@@ -7,15 +7,16 @@ import CurrentTimeBox from './CurrentTimeBox';
 import TimeBox from './TimeBox';
 
 import '../sass/TimeBoxList.scss';
+// import uuid from 'uuid';
 
 class TimeBoxList extends Component {
     state = {
         timeboxes: [],
-        loading: true,
-        error: null,
+        isLoading: true,
+        isError: null,
         add: { title: "", totalTimeInMinutes: "" },
-        editor: {index: "", id: "", title: "", totalTimeInMinutes: "" },
-        current: {index: "", id: "", title: "", totalTimeInMinutes: 0 },
+        editor: { index: "", id: "", title: "", totalTimeInMinutes: "" },
+        current: { index: "", id: "", title: "", totalTimeInMinutes: 0 },
         isEditorEditable: false,
         isCurrentEditable: false,
         elapsedTimeInSeconds: 0,
@@ -26,24 +27,45 @@ class TimeBoxList extends Component {
     }
 
     componentDidMount() {
-        AxiosTimeboxesApi.getAllTimeBoxes()
-            .then(
-                timeboxes => {
-                    this.setState({timeboxes})
-                    console.log('%c Table from AxiosTimeboxesApi: ', 'color: orangered');
-                    console.table(timeboxes)
-                }
-            )
-            .catch(error => this.setState({error}))
-            .then(() => this.setState({loading: false}))
+
+        TimeBoxApi.getAllTimeBoxes()
+            .then(timeboxes => this.setState({ timeboxes }))
+            .catch(isError => this.setState({ isError }))
+            .finally(isLoading => this.setState({ isLoading }))
     }
 
-    onCreate = timebox => {
+    addTimeBox = timebox => {
+        TimeBoxApi.addTimeBox(timebox)
+            .then(
+                addedTimeBox => this.setState(prevState => {
+                    const timeboxes = [...prevState.timeboxes, addedTimeBox];
+                    return { timeboxes };
+                })
+            )
+            .catch(err => console.log(err))
+            .finally(() => this.setState({ add: { title: "", totalTimeInMinutes: "" } }))
+    }
 
-        this.setState(prevState => {
-            const timeboxes = [...prevState.timeboxes, timebox];
-            return { timeboxes, title: "", totalTimeInMinutes: "", };
-        })
+    editTimeBox = (indexToUpdate, timeBoxToUpdate) => {
+        console.log('timeBoxToUpdate',timeBoxToUpdate)
+        TimeBoxApi.replaceTimeBox(timeBoxToUpdate)
+            .then(
+                updatedTimebox => this.setState(prevState => {
+                    const timeboxes = prevState.timeboxes.map((timebox, index) => index === indexToUpdate ? updatedTimebox : timebox)
+                    const timeboxToEdit = prevState.timeboxes[indexToUpdate]
+
+                    return { timeboxes, editor: { index: indexToUpdate, ...timeboxToEdit }, isEditorEditable: true };
+                })
+            )
+    }
+
+    removeTimeBox = indexToRemove => {
+        TimeBoxApi.removeTimeBox(this.state.timeboxes[indexToRemove]).then(
+            () => this.setState(prevState => {
+                const timeboxes = prevState.timeboxes.filter((timebox, index) => index !== indexToRemove)
+                return { timeboxes };
+            })
+        )
     }
 
     handleTitleAdd = e => {
@@ -102,22 +124,6 @@ class TimeBoxList extends Component {
         window.clearInterval(this.intervalId);
     }
 
-    handleEdit = (indexToUpdate, updatedTimebox) => {
-        this.setState(prevState => {
-            const timeboxes = prevState.timeboxes.map((timebox, index) => index === indexToUpdate ? updatedTimebox : timebox)
-            const timeboxToEdit = prevState.timeboxes[indexToUpdate]
-
-            return { timeboxes, editor:{index: indexToUpdate, ...timeboxToEdit}, isEditorEditable: true };
-        })
-    }
-
-    handleDelete = indexToRemove => {
-        this.setState(prevState => {
-            const timeboxes = prevState.timeboxes.filter((timebox, index) => index !== indexToRemove)
-            return { timeboxes };
-        })
-    }
-
     confirmChanges = (indexToUpdate, titleToUpdate, totalTimeInMinutesToUpdate) => {
 
         this.setState(prevState => {
@@ -125,7 +131,7 @@ class TimeBoxList extends Component {
             const timeboxes = prevState.timeboxes.map(
                 (timebox, index) => (index === indexToUpdate) ? {
                     id: timebox.id,
-                    title: (titleToUpdate ===  "") ? timebox.title : titleToUpdate,
+                    title: (titleToUpdate === "") ? timebox.title : titleToUpdate,
                     totalTimeInMinutes: (titleToUpdate === "") ? timebox.totalTimeInMinutes : totalTimeInMinutesToUpdate
                 } : timebox
             )
@@ -190,43 +196,45 @@ class TimeBoxList extends Component {
                 }
             )
 
-            return {current:{index: indexToUpdate, ...timebox[indexToUpdate]}, isCurrentEditable: true};
+            return { current: { index: indexToUpdate, ...timebox[indexToUpdate] }, isCurrentEditable: true };
         })
     }
 
     render() {
-        const { pausesCount, 
-                isPaused, 
-                isRunning, 
-                add: { titleFromAdd, totalTimeInMinutesFromAdd }, 
-                current: {
-                    index: indexFromCurrent,
-                    id: idFromCurrent,
-                    title: titleFromCurrent,
-                    totalTimeInMinutes: totalTimeInMinutesFromCurrent,
-                },
-                editor: {
-                    index: indexFromEditor,
-                    title: titleFromEditor,
-                    totalTimeInMinutes: totalTimeInMinutesFromEditor,
-                },
-                elapsedTimeInSeconds, 
-                isEditorEditable,
-            } = this.state;
+        const { pausesCount,
+            isPaused,
+            isRunning,
+            add: { titleFromAdd, totalTimeInMinutesFromAdd },
+            current: {
+                index: indexFromCurrent,
+                id: idFromCurrent,
+                title: titleFromCurrent,
+                totalTimeInMinutes: totalTimeInMinutesFromCurrent,
+            },
+            editor: {
+                index: indexFromEditor,
+                title: titleFromEditor,
+                totalTimeInMinutes: totalTimeInMinutesFromEditor,
+            },
+            elapsedTimeInSeconds,
+            isEditorEditable,
+            isLoading,
+            isError
+        } = this.state;
 
         return (
             <div className="TimeBoxList container">
-                <div className="content">
+                <div className="content" >
                     {
                         this.state.timeboxes.map((timebox, i) => {
 
-                            const basicProps = {
+                            const timeBoxProps = {
                                 id: timebox.id,
                                 index: i,
                                 title: timebox.title,
                                 totalTimeInMinutes: timebox.totalTimeInMinutes,
-                                handleDelete: () => this.handleDelete(i),
-                                handleEdit: () => this.handleEdit(
+                                removeTimeBox: () => this.removeTimeBox(i),
+                                editTimeBox: () => this.editTimeBox(
                                     i, {
                                     ...timebox,
                                     id: timebox.id,
@@ -237,7 +245,10 @@ class TimeBoxList extends Component {
                             }
 
                             return (
-                                <TimeBox key={timebox.id} basicProps={basicProps}/>
+                                <React.Fragment key={timebox.id}>
+                                    {isLoading ? <h2 key={timebox.id}>Loading...</h2> : <TimeBox key={timebox.id} timeBoxProps={timeBoxProps} />}
+                                    {isError && <h2>Nie udało się połączyć</h2>}
+                                </React.Fragment>
                             )
                         })
                     }
@@ -248,8 +259,7 @@ class TimeBoxList extends Component {
                         totalTimeInMinutes={totalTimeInMinutesFromAdd}
                         handleTitleAdd={this.handleTitleAdd}
                         handleTotalTimeInMinutesAdd={this.handleTotalTimeInMinutesAdd}
-                        onCreate={this.onCreate}
-
+                        addTimeBox={this.addTimeBox}
                     />
                     <TimeBoxEditor
                         index={indexFromEditor}
@@ -260,20 +270,20 @@ class TimeBoxList extends Component {
                         handleTotalTimeInMinutesChange={this.handleTotalTimeInMinutesChange}
                         confirmChanges={() => { this.confirmChanges(indexFromEditor, titleFromEditor, totalTimeInMinutesFromEditor) }}
                     />
-                    <CurrentTimeBox 
+                    <CurrentTimeBox
                         id={idFromCurrent}
                         index={indexFromCurrent}
-                        title={titleFromCurrent} 
-                        totalTimeInMinutes={totalTimeInMinutesFromCurrent} 
+                        title={titleFromCurrent}
+                        totalTimeInMinutes={totalTimeInMinutesFromCurrent}
                         isCurrentEditable={this.state.isCurrentEditable}
                         elapsedTimeInSeconds={elapsedTimeInSeconds}
-                        pausesCount={pausesCount} 
-                        isPaused={isPaused} 
-                        isRunning={isRunning} 
-                        handleStart={() => this.handleStart(indexFromCurrent)} 
-                        handleStop={this.handleStop} 
-                        togglePause={this.togglePause} 
-                        onEdit={this.onEdit} 
+                        pausesCount={pausesCount}
+                        isPaused={isPaused}
+                        isRunning={isRunning}
+                        handleStart={() => this.handleStart(indexFromCurrent)}
+                        handleStop={this.handleStop}
+                        togglePause={this.togglePause}
+                        onEdit={this.onEdit}
                     />
                 </div>
             </div>
