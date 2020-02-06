@@ -27,7 +27,7 @@ const AxiosTimeBoxApi = {
         if (!timeBoxToRemove.id) {
             throw new Error("TimeBos has to have an id to be updated")
         }
-        const res = await axios.delete(`${BASE_URL}/${timeBoxToRemove.id}`, timeBoxToRemove)
+        await axios.delete(`${BASE_URL}/${timeBoxToRemove.id}`, timeBoxToRemove)
 
     }
 }
