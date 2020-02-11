@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:4003/timeboxes"
+const BASE_URL = "http://localhost:5000/timeboxes"
 
 const FetchTimeBoxApi = {
     getAllTimeBoxes: async function (accessToken) {

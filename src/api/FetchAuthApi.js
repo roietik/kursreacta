@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:4003"
+const BASE_URL = "http://localhost:5000"
 
 const FetchAuthApi = {
     login: async function (credentials) {
