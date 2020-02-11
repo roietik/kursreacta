@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import TimeBoxApi from "../api/AxiosTimeBoxesApi";
+import TimeBoxApi from "../api/FetchTimeBoxesApi";
+import AuthenticationContext from '../contexts/AuthenticationContext';
+
 
 import TimeBoxEditor from './TimeBoxEditor';
 import TimeBoxCreator from './TimeBoxCreator';
@@ -7,9 +9,8 @@ import CurrentTimeBox from './CurrentTimeBox';
 import TimeBox from './TimeBox';
 
 import '../sass/TimeBoxList.scss';
-// import uuid from 'uuid';
 
-class TimeBoxList extends Component {
+class TimeBoxList extends Component{
     state = {
         timeboxes: [],
         isLoading: true,
@@ -28,14 +29,14 @@ class TimeBoxList extends Component {
 
     componentDidMount() {
 
-        TimeBoxApi.getAllTimeBoxes()
+        TimeBoxApi.getAllTimeBoxes(this.context.accessToken)
             .then(timeboxes => this.setState({ timeboxes }))
             .catch(isError => this.setState({ isError }))
             .finally(isLoading => this.setState({ isLoading }))
     }
 
     addTimeBox = timebox => {
-        TimeBoxApi.addTimeBox(timebox)
+        TimeBoxApi.addTimeBox(timebox, this.context.accessToken)
             .then(
                 addedTimeBox => this.setState(prevState => {
                     const timeboxes = [...prevState.timeboxes, addedTimeBox];
@@ -47,8 +48,7 @@ class TimeBoxList extends Component {
     }
 
     editTimeBox = (indexToUpdate, timeBoxToUpdate) => {
-        console.log('timeBoxToUpdate',timeBoxToUpdate)
-        TimeBoxApi.replaceTimeBox(timeBoxToUpdate)
+        TimeBoxApi.replaceTimeBox(timeBoxToUpdate, this.context.accessToken)
             .then(
                 updatedTimebox => this.setState(prevState => {
                     const timeboxes = prevState.timeboxes.map((timebox, index) => index === indexToUpdate ? updatedTimebox : timebox)
@@ -60,7 +60,7 @@ class TimeBoxList extends Component {
     }
 
     removeTimeBox = indexToRemove => {
-        TimeBoxApi.removeTimeBox(this.state.timeboxes[indexToRemove]).then(
+        TimeBoxApi.removeTimeBox(this.state.timeboxes[indexToRemove], this.context.accessToken).then(
             () => this.setState(prevState => {
                 const timeboxes = prevState.timeboxes.filter((timebox, index) => index !== indexToRemove)
                 return { timeboxes };
@@ -290,5 +290,6 @@ class TimeBoxList extends Component {
         )
     }
 }
+TimeBoxList.contextType = AuthenticationContext;
 
 export default TimeBoxList;

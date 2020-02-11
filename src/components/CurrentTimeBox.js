@@ -37,8 +37,8 @@ export class CurrentTimeBox extends Component {
                 <h1 className="title">CurrentTimeBox</h1>
                 <p>Title: {title}</p>
                 <p>Index: {index}</p>
-                <Clock key={id + "-clock"} hours={hoursLeftFormat} minutes={minutesLeftFormat} seconds={secondsLeftFormat} inactive={isPaused ? "inactive" : ""} />
-                <ProgressBar key={id + "-progress"} inactive={isPaused ? "inactive" : ""} progress={progressInPercent} />
+                <Clock hours={hoursLeftFormat} minutes={minutesLeftFormat} seconds={secondsLeftFormat} inactive={isPaused ? "inactive" : ""} />
+                <ProgressBar inactive={isPaused ? "inactive" : ""} progress={progressInPercent} />
                 <button onClick={handleStart} disabled={isRunning}>Start</button>
                 <button onClick={handleStop} disabled={!isRunning} >Stop</button>
                 <button onClick={togglePause} disabled={!isRunning}>{isPaused ? 'Wznów' : 'Pauzuj'}</button>

@@ -1,0 +1,54 @@
+
+.LoginForm {
+    border: 1px solid orangered;
+    padding: 20px;
+    margin-top: 18px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    position: relative;
+    background: #1d1e25;
+    .title {
+        position: absolute;
+        top: -32px;
+        right: 20px;
+        font-size: 18px;
+        background: #1e1f25;
+        padding: 5px;
+        border: 1px solid orangered;
+        border-radius: 10px;
+        color: #FFFFFF;
+    }
+
+    form {
+        label {
+            margin-right: 20px;
+            width: 100%;
+            display: grid;
+            margin-bottom: 10px;
+            line-height: 16px;
+            color: #ffffff;
+            input {
+                border: 1px solid orangered;
+                border-radius: 10px;
+                line-height: 24px;
+                font-size: 16px;
+                padding-left: 8px;
+            }
+        }
+    }
+
+    button {
+        max-width: 160px;
+        font-size: 16px;
+        border: 1px solid orangered;
+        background: white;
+        border-radius: 10px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        line-height: 24px;
+        margin-right: 0;
+        margin-left: auto;
+        display: block;
+    }
+
+}
