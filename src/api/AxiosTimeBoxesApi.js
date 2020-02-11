@@ -2,7 +2,7 @@ import axios from "axios";
 
 window.axios = axios;
 
-const BASE_URL = "http://localhost:4000/timeboxes"
+const BASE_URL = "http://localhost:4003/timeboxes"
 
 const AxiosTimeBoxApi = {
     getAllTimeBoxes: async function () {

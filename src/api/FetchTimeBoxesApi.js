@@ -1,19 +1,28 @@
-const BASE_URL = "http://localhost:4000/timeboxes"
+const BASE_URL = "http://localhost:4003/timeboxes"
 
 const FetchTimeBoxApi = {
-    getAllTimeBoxes: async function () {
-        const res = await fetch(BASE_URL);
+    getAllTimeBoxes: async function (accessToken) {
+        const res = await fetch(BASE_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
+
+            }        
+        });
         if (!res.ok) {
             throw new Error("Something went wrong");
         }
         const timeboxes = await res.json();
          return timeboxes;
     },
-    addTimeBox: async function (timeBoxToAdd) {
+    addTimeBox: async function (timeBoxToAdd, accessToken) {
         const res = await fetch(BASE_URL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
+
             },
             body: JSON.stringify(timeBoxToAdd)
         });
@@ -23,14 +32,15 @@ const FetchTimeBoxApi = {
         const addedTimeBox = await res.json();       
         return addedTimeBox;
     },
-    replaceTimeBox: async function (timeBoxToReplace) {
+    replaceTimeBox: async function (timeBoxToReplace, accessToken) {
         if (!timeBoxToReplace.id) {
             throw new Error("TimeBos has to have an id to be updated")
         }
         const res = await fetch(`${BASE_URL}/${timeBoxToReplace.id}`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
             },
             body: JSON.stringify(timeBoxToReplace)
         });
@@ -40,14 +50,15 @@ const FetchTimeBoxApi = {
         const replacedTimeBox = await res.json();       
         return replacedTimeBox;
     },
-    removeTimeBox: async function (timeBoxToRemove) {
+    removeTimeBox: async function (timeBoxToRemove, accessToken) {
         if (!timeBoxToRemove.id) {
             throw new Error("TimeBos has to have an id to be updated")
         }
         const res = await fetch(`${BASE_URL}/${timeBoxToRemove.id}`, {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
             }        
         });
         if (!res.ok) {

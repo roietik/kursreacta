@@ -1,14 +1,27 @@
 {
+  "users": [
+    {
+      "email": "radoslaw.grzymala@hotmail.com",
+      "password": "$2a$10$.G3ItwkNKxQ/ATD/fEWdqu/BUJIc.vOM0oXhm1F06bO5pCbZZ21FC",
+      "id": 1
+    },
+    {
+      "email": "patrycja.smardzewska@hotmail.com",
+      "password": "$2a$10$nAAgMdJQTPxWgPD1gGmz6ueYu4q9Nvbc5LxafVJKPvyr1A9TcUsuy",
+      "id": 2
+    }
+  ],
   "timeboxes": [
     {
       "id": "0",
-      "title": "TimeBox03524631",
+      "title": "re",
       "totalTimeInMinutes": 25
     },
     {
       "id": "1",
       "title": "TimeBox02567",
-      "totalTimeInMinutes": 5
+      "totalTimeInMinutes": 5,
+      "userId": 2
     },
     {
       "id": "2",
@@ -44,6 +57,21 @@
       "title": "headers",
       "totalTimeInMinutes": "33",
       "id": "NyVJKdN"
+    },
+    {
+      "title": "ff",
+      "totalTimeInMinutes": "2",
+      "id": "EXQA4Vr"
+    },
+    {
+      "title": "xx",
+      "totalTimeInMinutes": "10",
+      "id": "elXQ_hz"
+    },
+    {
+      "title": "1",
+      "totalTimeInMinutes": "1",
+      "id": "hT45Zzr"
     }
   ]
 }
