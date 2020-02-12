@@ -14,7 +14,7 @@ const FetchTimeBoxApi = {
             throw new Error("Something went wrong");
         }
         const timeboxes = await res.json();
-         return timeboxes;
+        return timeboxes;
     },
     addTimeBox: async function (timeBoxToAdd, accessToken) {
         const res = await fetch(BASE_URL, {

@@ -7,7 +7,6 @@ export class CurrentTimeBox extends Component {
 
     render() {
         const {
-            id,
             index,
             title,
             totalTimeInMinutes,

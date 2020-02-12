@@ -4,7 +4,7 @@ import AuthenticationContext from '../contexts/AuthenticationContext';
 
 
 function UserGreeting(props) {
-    
+
     return (
         <AuthenticationContext.Consumer>
             {

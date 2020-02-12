@@ -1,13 +1,17 @@
 import React from 'react';
 import Header from '../components/Header';
-import TimeBoxList from '../components/TimeBoxList';
+import TimeBoxesMenager from './TimeBoxesMenager';
 import InspirationalQuote from '../components/InspirationalQuote';
+import UserGreetings from '../components/UserGreeting';
+
 
 function AuthenticatedApp() {
     return (
         <>
-            <Header />
-            <TimeBoxList />
+            <Header>
+                <UserGreetings/>
+            </Header>
+            <TimeBoxesMenager />
             <InspirationalQuote/>
         </>
     )
