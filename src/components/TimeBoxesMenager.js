@@ -7,108 +7,47 @@ import TimeBoxEditor from "./TimeBoxEditor";
 import TimeBoxCreator from "./TimeBoxCreator";
 import CurrentTimeBox from "./CurrentTimeBox";
 import TimeBox from "./TimeBox";
+import {
+  timeboxesReducer,
+  getAllTimeBoxesFromState,
+  areTimeBoxesLoading,
+  getAllTimeBoxesLoadingError,
+  getTimeBoxById,
+  getCurrentlyEditedTimeBox
+} from "../../src/reducers";
+import {
+  timeboxesLoad,
+  errorSet,
+  loadingIndicatorDisable,
+  timeboxAdd,
+  timeboxReplace,
+  timeboxRemove,
+  confirmChangesPath
+} from "../../src/actions";
 
 import "../sass/TimeBoxesMenager.scss";
 
-function timeboxesReducer(state, action) {
-  switch (action.type) {
-    case "TIMEBOXES_LOAD":
-      const { timeboxes } = action;
-      return { ...state, timeboxes };
-    case "TIMEBOX_ADD": {
-      const { timebox } = action;
-      const timeboxes = [...state.timeboxes, timebox];
-      return { ...state, timeboxes };
-    }
-    case "TIMEBOX_REMOVE": {
-      const { indexToRemove } = action;
-      const timeboxes = state.timeboxes.filter(
-        (_, index) => index !== indexToRemove
-      );
-      return { ...state, timeboxes };
-    }
-    case "TIMEBOX_REPLACE": {
-      const { indexToUpdate, updatedTimebox } = action;
-      const timeboxes = state.timeboxes.map((timebox, index) =>
-        index === indexToUpdate ? updatedTimebox : timebox
-      );
-      const timeboxToEdit = timeboxes[indexToUpdate];
-
-      return {
-        ...state,
-        timeboxes,
-        editor: { index: indexToUpdate, ...timeboxToEdit },
-        isEditorEditable: true
-      };
-    }
-    case "CONFIRM_CHANGES": {
-      const { obj } = action;
-
-      const titleToUpdate = obj.title;
-      const totalTimeInMinutesToUpdate = obj.totalTimeInMinutes;
-      const indexToUpdate = obj.index;
-
-      const timeboxes = state.timeboxes.map((timebox, index) =>
-        index === indexToUpdate
-          ? {
-              id: timebox.id,
-              title: titleToUpdate === "" ? timebox.title : titleToUpdate,
-              totalTimeInMinutes:
-                totalTimeInMinutesToUpdate === ""
-                  ? timebox.totalTimeInMinutes
-                  : totalTimeInMinutesToUpdate
-            }
-          : timebox
-      );
-      return {
-        timeboxes,
-        isEdit: false,
-        isEditable: false,
-        editor: { index: "", id: "", title: "", totalTimeInMinutes: "" }
-      };
-    }
-    case "LOADING_INDICATOR_DISABLE":
-      return { ...state, isLoading: false };
-    case "ERROR_SET":
-      const { error } = action;
-      return { ...state, error };
-
-    default:
-      return state;
-  }
-}
-
 function TimeBoxesMenager() {
-  const initialState = {
-    timeboxes: [],
-    isLoading: true,
-    isError: null,
-    editor: { index: "", id: "", title: "", totalTimeInMinutes: "" },
-    current: { index: "", id: "", title: "", totalTimeInMinutes: 0 },
-    isEditorEditable: false,
-    isCurrentEditable: false,
-    elapsedTimeInSeconds: 0,
-    pausesCount: 0,
-    isRunning: false,
-    isPaused: false,
-    isTimerStart: false
-  };
-
-  const [state, dispatch] = useReducer(timeboxesReducer, initialState);
+  const [state, dispatch] = useReducer(
+    timeboxesReducer,
+    undefined,
+    timeboxesReducer
+  );
   const { accessToken } = useContext(AuthenticationContext);
+
+  console.log("getCurrentlyEditedTimeBox: ", getCurrentlyEditedTimeBox(state));
+  console.log("getTimeBoxById: ", getTimeBoxById(state, 2));
 
   useEffect(() => {
     TimeBoxApi.getAllTimeBoxes(accessToken)
-      .then(timeboxes => dispatch({ type: "TIMEBOXES_LOAD", timeboxes }))
-      .catch(() => dispatch({ type: "ERROR_SET" }))
-      .finally(() => dispatch({ type: "LOADING_INDICATOR_DISABLE" }));
+      .then(timeboxes => dispatch(timeboxesLoad(timeboxes)))
+      .catch(() => dispatch(errorSet()))
+      .finally(() => dispatch(loadingIndicatorDisable()));
   }, [accessToken]);
 
   const addTimeBox = timebox => {
     TimeBoxApi.addTimeBox(timebox, accessToken)
-      .then(addedTimeBox =>
-        dispatch({ type: "TIMEBOX_ADD", timebox: addedTimeBox })
-      )
+      .then(addedTimeBox => dispatch(timeboxAdd(addedTimeBox)))
       .catch(err => console.log(err));
   };
 
@@ -117,7 +56,7 @@ function TimeBoxesMenager() {
       timeBoxToUpdate,
       accessToken
     ).then(updatedTimebox =>
-      dispatch({ type: "TIMEBOX_REPLACE", updatedTimebox, indexToUpdate })
+      dispatch(timeboxReplace(updatedTimebox, indexToUpdate))
     );
   };
 
@@ -125,7 +64,7 @@ function TimeBoxesMenager() {
     TimeBoxApi.removeTimeBox(
       state.timeboxes[indexToRemove],
       accessToken
-    ).then(() => dispatch({ type: "TIMEBOX_REMOVE", indexToRemove }));
+    ).then(() => dispatch(timeboxRemove(indexToRemove)));
   };
 
   const startTimer = () => {
@@ -161,7 +100,7 @@ function TimeBoxesMenager() {
         : timebox
     );
     TimeBoxApi.replaceTimeBox(Update[obj.index], accessToken).then(() =>
-      dispatch({ type: "CONFIRM_CHANGES", obj })
+      dispatch(confirmChangesPath(obj))
     );
     disableEditor();
   };
@@ -170,7 +109,7 @@ function TimeBoxesMenager() {
 
   const handleStart = indexToUpdate => {
     dispatch(prevState => {
-      const isTimerStart = prevState.timeboxes.map((arg, index) =>
+      const isTimerStart = prevState.timeboxes.map((_, index) =>
         index === indexToUpdate ? true : false
       );
 
@@ -207,21 +146,19 @@ function TimeBoxesMenager() {
   };
 
   const handleActivTimer = indexToUpdate => {
-    dispatch(prevState => {
-      const timebox = prevState.timeboxes.map(
-        (timebox, index) =>
-          index === indexToUpdate && {
-            id: timebox.id,
-            title: timebox.title,
-            totalTimeInMinutes: timebox.totalTimeInMinutes
-          }
-      );
+    const timebox = state.timeboxes.map(
+      (timebox, index) =>
+        index === indexToUpdate && {
+          id: timebox.id,
+          title: timebox.title,
+          totalTimeInMinutes: timebox.totalTimeInMinutes
+        }
+    );
+    console.log("send to current", timebox[indexToUpdate]);
 
-      return {
-        current: { index: indexToUpdate, ...timebox[indexToUpdate] },
-        isCurrentEditable: true
-      };
-    });
+    const currentTimeBox = timebox[indexToUpdate];
+
+    dispatch({ type: "SEND_TO_CURRENT", currentTimeBox });
   };
 
   const {
@@ -229,16 +166,14 @@ function TimeBoxesMenager() {
     isPaused,
     isRunning,
     elapsedTimeInSeconds,
-    isEditorEditable,
-    isLoading,
-    isError
+    isEditorEditable
   } = state;
 
   return (
     <div className="TimeBoxesMenager container">
       <div className="content">
         <TimeBoxList>
-          {state.timeboxes.map((timebox, i) => {
+          {getAllTimeBoxesFromState(state).map((timebox, i) => {
             const timeBoxProps = {
               id: timebox.id,
               index: i,
@@ -257,12 +192,18 @@ function TimeBoxesMenager() {
 
             return (
               <React.Fragment key={timebox.id}>
-                {isLoading ? (
+                {areTimeBoxesLoading(state) ? (
                   <h2 key={timebox.id}>Loading...</h2>
                 ) : (
-                  <TimeBox key={timebox.id} timeBoxProps={timeBoxProps} />
+                  <TimeBox
+                    key={timebox.id}
+                    timeBoxProps={timeBoxProps}
+                    handleActivTimer={() => handleActivTimer(i)}
+                  />
                 )}
-                {isError && <h2>Nie udało się połączyć</h2>}
+                {getAllTimeBoxesLoadingError(state) && (
+                  <h2>Nie udało się połączyć</h2>
+                )}
               </React.Fragment>
             );
           })}

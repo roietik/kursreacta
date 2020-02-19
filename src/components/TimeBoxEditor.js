@@ -18,6 +18,7 @@ class TimeBoxEditor extends Component {
     this.titleInput.current.value = "";
     this.timeInput.current.value = "";
   };
+
   render() {
     const { title, totalTimeInMinutes, isEditorEditable } = this.props;
     return (
