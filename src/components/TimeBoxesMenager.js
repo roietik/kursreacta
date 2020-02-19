@@ -148,8 +148,6 @@ function TimeBoxesMenager() {
   };
 
   const confirmChanges = obj => {
-    console.log("confirmChanges:", obj);
-
     const Update = state.timeboxes.map((timebox, index) =>
       index === obj.index
         ? {
@@ -162,9 +160,6 @@ function TimeBoxesMenager() {
           }
         : timebox
     );
-
-    console.log("Update from confirmChanges: ", Update[obj.index]);
-
     TimeBoxApi.replaceTimeBox(Update[obj.index], accessToken).then(() =>
       dispatch({ type: "CONFIRM_CHANGES", obj })
     );
