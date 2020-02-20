@@ -1,6 +1,7 @@
-import React, { useEffect, useContext, useReducer } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import TimeBoxApi from "../api/FetchTimeBoxesApi";
 import AuthenticationContext from "../contexts/AuthenticationContext";
+import { ReactReduxContext } from "react-redux";
 
 import TimeBoxList from "./TimeBoxList";
 import TimeBoxEditor from "./TimeBoxEditor";
@@ -8,12 +9,11 @@ import TimeBoxCreator from "./TimeBoxCreator";
 import CurrentTimeBox from "./CurrentTimeBox";
 import TimeBox from "./TimeBox";
 import {
-  timeboxesReducer,
-  getAllTimeBoxesFromState,
+  //   getAllTimeBoxesFromState,
   areTimeBoxesLoading,
-  getAllTimeBoxesLoadingError,
-  getTimeBoxById,
-  getCurrentlyEditedTimeBox
+  getAllTimeBoxesLoadingError
+  //   getTimeBoxById,
+  //   getCurrentlyEditedTimeBox
 } from "../../src/reducers";
 import {
   timeboxesLoad,
@@ -22,28 +22,44 @@ import {
   timeboxAdd,
   timeboxReplace,
   timeboxRemove,
-  confirmChangesPath
+  confirmChangesPath,
+  disableEditorAction
 } from "../../src/actions";
 
 import "../sass/TimeBoxesMenager.scss";
 
+function useForceUpdate() {
+  // eslint-disable-next-line
+  const [updateCounter, setUpdateCounter] = useState(0);
+  function forceUpdate() {
+    setUpdateCounter(prevCounter => prevCounter + 1);
+  }
+  return forceUpdate;
+}
 function TimeBoxesMenager() {
-  const [state, dispatch] = useReducer(
-    timeboxesReducer,
-    undefined,
-    timeboxesReducer
-  );
+  const { store } = useContext(ReactReduxContext);
+  const forceUpdate = useForceUpdate();
+  const state = store.getState();
+  console.log("getState from state", state);
+  const dispatch = store.dispatch;
+  // eslint-disable-next-line
+  useEffect(() => store.subscribe(forceUpdate), []);
+
   const { accessToken } = useContext(AuthenticationContext);
 
-  console.log("getCurrentlyEditedTimeBox: ", getCurrentlyEditedTimeBox(state));
-  console.log("getTimeBoxById: ", getTimeBoxById(state, 2));
-
+  //   console.log("getCurrentlyEditedTimeBox: ", getCurrentlyEditedTimeBox(state));
+  //   console.log("getTimeBoxById: ", getTimeBoxById(state, 2));
+  // eslint-disable-next-line
   useEffect(() => {
     TimeBoxApi.getAllTimeBoxes(accessToken)
-      .then(timeboxes => dispatch(timeboxesLoad(timeboxes)))
+      .then(timeboxes => {
+        dispatch(timeboxesLoad(timeboxes));
+        store.dispatch(timeboxesLoad(timeboxes));
+      })
       .catch(() => dispatch(errorSet()))
       .finally(() => dispatch(loadingIndicatorDisable()));
-  }, [accessToken]);
+    // eslint-disable-next-line
+  }, []);
 
   const addTimeBox = timebox => {
     TimeBoxApi.addTimeBox(timebox, accessToken)
@@ -80,27 +96,35 @@ function TimeBoxesMenager() {
   };
 
   const disableEditor = () => {
-    dispatch({
-      isEditorEditable: false,
-      editor: { index: "", id: "", title: "", totalTimeInMinutes: "" }
-    });
+    dispatch(disableEditorAction());
   };
 
-  const confirmChanges = obj => {
-    const Update = state.timeboxes.map((timebox, index) =>
-      index === obj.index
-        ? {
-            id: timebox.id,
-            title: obj.title === "" ? timebox.title : obj.title,
-            totalTimeInMinutes:
-              obj.totalTimeInMinutes === ""
-                ? timebox.totalTimeInMinutes
-                : obj.totalTimeInMinutes
-          }
-        : timebox
-    );
-    TimeBoxApi.replaceTimeBox(Update[obj.index], accessToken).then(() =>
-      dispatch(confirmChangesPath(obj))
+  const confirmChanges = (
+    editedTitle,
+    editedTotalTimeInMinutes,
+    editedIndex
+  ) => {
+    console.log("editedIndex", editedIndex);
+    console.log("id", state.editor.id);
+
+    const timeBoxToReplace = {
+      title: editedTitle,
+      totalTimeInMinutes: editedTotalTimeInMinutes,
+      id: state.editor.id
+    };
+
+    const editedId = state.editor.id;
+
+    console.log("timeBoxToReplace", timeBoxToReplace, "index", editedIndex);
+    TimeBoxApi.replaceTimeBox(timeBoxToReplace, accessToken).then(() =>
+      dispatch(
+        confirmChangesPath(
+          editedTitle,
+          editedTotalTimeInMinutes,
+          editedId,
+          editedIndex
+        )
+      )
     );
     disableEditor();
   };
@@ -154,7 +178,6 @@ function TimeBoxesMenager() {
           totalTimeInMinutes: timebox.totalTimeInMinutes
         }
     );
-    console.log("send to current", timebox[indexToUpdate]);
 
     const currentTimeBox = timebox[indexToUpdate];
 
@@ -172,8 +195,108 @@ function TimeBoxesMenager() {
   return (
     <div className="TimeBoxesMenager container">
       <div className="content">
+        <div className="horizontal-scroll-wrapper squares">
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+          <div className="horizontal-container">
+            <h3 className="horizontal-item">Title Here</h3>
+            <p>
+              Ultra orlen zangya baba commander garlic. Force great fusion power
+              shinhan abo 17 tarble chi-chi 18 ha. Great ultra pai. Great earth
+              pikkon supreme shinhan ginger pui. Cacao rasin froug freeza dende
+              18 yajirobe son bido. Jeice world saiyan chaozu froug ha bio-broly
+              corporation god. Spice gohan. Maron arqua majin energy saiyan dr.
+              master ha dende namekian tenshinhan zarbon. Radar amond tail god
+              puar gure dr. energy.
+            </p>
+          </div>
+        </div>
+
         <TimeBoxList>
-          {getAllTimeBoxesFromState(state).map((timebox, i) => {
+          {console.log("state", state)}
+          {state.timeboxes.map((timebox, i) => {
             const timeBoxProps = {
               id: timebox.id,
               index: i,
@@ -211,8 +334,10 @@ function TimeBoxesMenager() {
       </div>
       <div className="sidebar">
         <TimeBoxCreator addTimeBox={addTimeBox} />
+        {console.log("state.editor.id", state.editor.id)}
         <TimeBoxEditor
           index={state.editor.index}
+          id={state.editor.id}
           title={state.editor.title}
           totalTimeInMinutes={state.editor.totalTimeInMinutes}
           isEditorEditable={isEditorEditable}

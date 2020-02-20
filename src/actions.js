@@ -20,4 +20,16 @@ export const timeboxRemove = indexToRemove => ({
   type: "TIMEBOX_REMOVE",
   indexToRemove
 });
-export const confirmChangesPath = obj => ({ type: "CONFIRM_CHANGES", obj });
+export const confirmChangesPath = (
+  editedTitle,
+  editedTotalTimeInMinutes,
+  editedId,
+  editedIndex
+) => ({
+  type: "CONFIRM_CHANGES",
+  editedTitle,
+  editedTotalTimeInMinutes,
+  editedId,
+  editedIndex
+});
+export const disableEditorAction = () => ({ type: "DISABLE_EDITOR" });

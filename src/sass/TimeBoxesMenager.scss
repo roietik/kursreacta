@@ -1,31 +1,109 @@
 @import "./basic.scss";
 
 .TimeBoxesMenager {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-column-gap: 10px;
-    grid-row-gap: 15px;
-    .content {
-        @include shadow;
-        width: 420px;
-        background-color: $drk-gray;
-        color: $white;
-        border-radius: 10px;
-        padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 15px;
+  .content {
+    @include shadow;
+    width: 420px;
+    background-color: $drk-gray;
+    color: $white;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .sidebar {
+    position: sticky;
+    top: 20px;
 
-    }
-    .sidebar {
-        position: sticky;
-        top: 20px;
-        
-        @include shadow;
-        width: 420px;
-        max-height: 744px;
+    @include shadow;
+    width: 420px;
+    max-height: 744px;
 
-        background-color: $drk-gray;
-        color: $white;
-        border-radius: 10px;
-        padding: 10px;
+    background-color: $drk-gray;
+    color: $white;
+    border-radius: 10px;
+    padding: 10px;
+  }
+}
 
-    }
+// horizontal
+
+$finalHeight: 250px;
+// $finalWidth: 3 * $finalHeight;
+$finalWidth: 398px;
+$scrollBarHeight: 1px;
+
+::-webkit-scrollbar {
+  width: $scrollBarHeight;
+  height: $scrollBarHeight;
+}
+
+::-webkit-scrollbar-button {
+  width: $scrollBarHeight;
+  height: $scrollBarHeight;
+}
+
+div {
+  box-sizing: border-box;
+}
+
+.horizontal-scroll-wrapper {
+  position: relative;
+  display: block;
+  top: 0;
+  left: 0;
+  width: calc(#{$finalHeight} + #{$scrollBarHeight});
+  max-height: $finalWidth;
+  margin: 0;
+  padding-top: $scrollBarHeight;
+  background: #1f2026;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-transform: rotate(-90deg) translateY(-$finalHeight);
+  -ms-transform: rotate(-90deg) translateY(-$finalHeight);
+  transform: rotate(-90deg) translateY(-$finalHeight);
+  -webkit-transform-origin: right top;
+  -ms-transform-origin: right top;
+  transform-origin: right top;
+
+  //custom
+  border-radius: 10px;
+  border: 1px solid orangered;
+  margin-bottom: -135px;
+
+  & > div {
+    display: block;
+    padding: 5px;
+    background: #1f2026;
+    transform: rotate(90deg);
+    transform-origin: right top;
+  }
+}
+
+.squares {
+  padding: $finalHeight 0 0 0;
+  & > div {
+    width: $finalHeight;
+    height: $finalHeight;
+    margin: 10px 0;
+  }
+}
+.horizontal-container {
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  .horizontal-item {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  h3 {
+    padding-top: 20px;
+    color: #dadadb;
+    margin: 0;
+  }
+  p {
+    color: #dadadb;
+  }
 }

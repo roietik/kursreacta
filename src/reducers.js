@@ -39,38 +39,43 @@ export function timeboxesReducer(state = initialState, action = {}) {
         index === indexToUpdate ? updatedTimebox : timebox
       );
       const timeboxToEdit = timeboxes[indexToUpdate];
+      console.log("timeboxToEdit", timeboxToEdit);
 
       return {
         ...state,
         timeboxes,
-        editor: { index: indexToUpdate, ...timeboxToEdit },
+        editor: { ...timeboxToEdit, index: indexToUpdate },
         isEditorEditable: true
       };
     }
     case "CONFIRM_CHANGES": {
-      const { obj } = action;
+      const {
+        editedTitle,
+        editedTotalTimeInMinutes,
+        editedId,
+        editedIndex
+      } = action;
 
-      const titleToUpdate = obj.title;
-      const totalTimeInMinutesToUpdate = obj.totalTimeInMinutes;
-      const indexToUpdate = obj.index;
+      console.log(editedId);
 
       const timeboxes = state.timeboxes.map((timebox, index) =>
-        index === indexToUpdate
+        index === editedIndex
           ? {
-              id: timebox.id,
-              title: titleToUpdate === "" ? timebox.title : titleToUpdate,
+              title: editedTitle === "" ? timebox.title : editedTitle,
               totalTimeInMinutes:
-                totalTimeInMinutesToUpdate === ""
+                editedTotalTimeInMinutes === ""
                   ? timebox.totalTimeInMinutes
-                  : totalTimeInMinutesToUpdate
+                  : editedTotalTimeInMinutes,
+              id: editedIndex
             }
           : timebox
       );
       return {
+        ...state,
         timeboxes,
         isEdit: false,
         isEditable: false,
-        editor: { index: "", id: "", title: "", totalTimeInMinutes: "" }
+        editor: { title: "", totalTimeInMinutes: "", id: "", index: "" }
       };
     }
     case "SEND_TO_CURRENT": {
@@ -84,6 +89,13 @@ export function timeboxesReducer(state = initialState, action = {}) {
     }
     case "LOADING_INDICATOR_DISABLE":
       return { ...state, isLoading: false };
+    case "DISABLE_EDITOR": {
+      return {
+        ...state,
+        isEditorEditable: false,
+        editor: { index: "", id: "", title: "", totalTimeInMinutes: "" }
+      };
+    }
     case "ERROR_SET":
       const { error } = action;
       return { ...state, error };
@@ -100,7 +112,7 @@ export const getAllTimeBoxesFromState = state => state.timeboxes;
 export const areTimeBoxesLoading = state => state.isLoading;
 export const getAllTimeBoxesLoadingError = state => state.isError;
 
-export const getTimeBoxById = (state, timeboxId) =>
-  state.timeboxes.find(timebox => timebox.id === timeboxId);
-export const getCurrentlyEditedTimeBox = state =>
-  getTimeBoxById(state, state.editor.id);
+// export const getTimeBoxById = (state, timeboxId) =>
+//   state.timeboxes.find(timebox => timebox.id === timeboxId);
+// export const getCurrentlyEditedTimeBox = state =>
+//   getTimeBoxById(state, state.editor.id);

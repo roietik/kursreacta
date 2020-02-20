@@ -31,6 +31,9 @@ const FetchTimeBoxApi = {
     return addedTimeBox;
   },
   replaceTimeBox: async function(timeBoxToReplace, accessToken) {
+    console.log("IDforAPI =>", timeBoxToReplace.id);
+    console.log("TIMEBOXforAPI =>", timeBoxToReplace);
+
     if (!timeBoxToReplace.id) {
       throw new Error("TimeBos has to have an id to be updated");
     }

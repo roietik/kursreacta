@@ -10,11 +10,11 @@ class TimeBoxEditor extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.confirmChanges({
-      title: this.titleInput.current.value,
-      totalTimeInMinutes: this.timeInput.current.value,
-      index: this.props.index
-    });
+    this.props.confirmChanges(
+      this.titleInput.current.value,
+      this.timeInput.current.value,
+      this.props.index
+    );
     this.titleInput.current.value = "";
     this.timeInput.current.value = "";
   };
@@ -26,23 +26,27 @@ class TimeBoxEditor extends Component {
         <h1 className="title">TimeBoxEditor</h1>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="title">
-            Co robisz?{title}
+            Title: {title}
             <input
               disabled={!isEditorEditable}
               name="title"
               defaultValue={title}
               ref={this.titleInput}
               type="text"
+              placeholder="New Title"
+              required
             />
           </label>
           <label htmlFor="num">
-            Ile minut? {totalTimeInMinutes}
+            Time: {totalTimeInMinutes}
             <input
               disabled={!isEditorEditable}
               name="num"
               defaultValue={totalTimeInMinutes}
               ref={this.timeInput}
               type="number"
+              placeholder="New Time"
+              required
             />
           </label>
           <button disabled={!isEditorEditable} type="submit">

@@ -8,13 +8,14 @@ body {
   letter-spacing: $base-font-size/20;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: inherit;
 }
 
 body {
-  @include bg-gradient;
+  background: #9f320e;
   display: grid;
   justify-content: center;
-
 }
