@@ -7,13 +7,14 @@ export class CurrentTimeBox extends Component {
   render() {
     const {
       index,
+      id,
       title,
       totalTimeInMinutes,
       isCurrentEditable,
       elapsedTimeInSeconds,
       isRunning,
       isPaused,
-      //   pausesCount,
+      pausesCount,
       handleStart,
       handleStop,
       togglePause,
@@ -47,8 +48,13 @@ export class CurrentTimeBox extends Component {
     return (
       <div className={`CurrentTimeBox ${!isCurrentEditable ? "inactive" : ""}`}>
         <h1 className="title">CurrentTimeBox</h1>
-        <p>Title: {title}</p>
-        <p>Index: {index}</p>
+        <div className="row-dev">
+          <p>Title: {title}</p>
+          <p>Time: {totalTimeInMinutes}</p>
+          <p>Index: {index}</p>
+          <p>Id: {id}</p>
+        </div>
+
         <Clock
           hours={hoursLeftFormat}
           minutes={minutesLeftFormat}
@@ -71,8 +77,7 @@ export class CurrentTimeBox extends Component {
         <button onClick={onEdit} disabled={isRunning}>
           Edit
         </button>
-        {/* <p>Liczba przerw: {pausesCount}</p> */}
-        <p>Liczba przerw: pausesCount</p>
+        <p>Liczba przerw: {pausesCount}</p>
       </div>
     );
   }

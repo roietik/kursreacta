@@ -33,3 +33,17 @@ export const confirmChangesPath = (
   editedIndex
 });
 export const disableEditorAction = () => ({ type: "DISABLE_EDITOR" });
+export const activeTimer = currentTimeBox => ({
+  type: "ACTIVE_TIMER",
+  currentTimeBox
+});
+export const isTimerStart = indexToUpdate => ({
+  type: "IS_TIMER_START",
+  indexToUpdate
+});
+export const startTimerAction = () => ({
+  type: "START_TIMER",
+  time: "jsndvlkjdfnvksldjfnvkjs"
+});
+export const stopAction = () => ({ type: "STOP_ACTION" });
+export const getEditFromCurrent = () => ({ type: "CURRENT_EDIT" });

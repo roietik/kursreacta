@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 import TimeBoxApi from "../api/FetchTimeBoxesApi";
 import AuthenticationContext from "../contexts/AuthenticationContext";
-import { ReactReduxContext } from "react-redux";
+import { ReactReduxContext, connect } from "react-redux";
 
 import TimeBoxList from "./TimeBoxList";
 import TimeBoxEditor from "./TimeBoxEditor";
@@ -9,12 +9,10 @@ import TimeBoxCreator from "./TimeBoxCreator";
 import CurrentTimeBox from "./CurrentTimeBox";
 import TimeBox from "./TimeBox";
 import {
-  //   getAllTimeBoxesFromState,
   areTimeBoxesLoading,
   getAllTimeBoxesLoadingError
-  //   getTimeBoxById,
-  //   getCurrentlyEditedTimeBox
 } from "../../src/reducers";
+
 import {
   timeboxesLoad,
   errorSet,
@@ -23,32 +21,41 @@ import {
   timeboxReplace,
   timeboxRemove,
   confirmChangesPath,
-  disableEditorAction
+  disableEditorAction,
+  activeTimer,
+  isTimerStart,
+  startTimerAction,
+  stopAction,
+  getEditFromCurrent
 } from "../../src/actions";
 
 import "../sass/TimeBoxesMenager.scss";
 
+let intervalId = null;
 function useForceUpdate() {
   // eslint-disable-next-line
   const [updateCounter, setUpdateCounter] = useState(0);
   function forceUpdate() {
-    setUpdateCounter(prevCounter => prevCounter + 1);
+    setUpdateCounter(prevCounter => prevCounter + 0.1);
   }
   return forceUpdate;
 }
-function TimeBoxesMenager() {
+function TimeBoxesMenager(props) {
+  // eslint-disable-next-line
   const { store } = useContext(ReactReduxContext);
   const forceUpdate = useForceUpdate();
   const state = store.getState();
-  console.log("getState from state", state);
   const dispatch = store.dispatch;
-  // eslint-disable-next-line
-  useEffect(() => store.subscribe(forceUpdate), []);
+  useEffect(() => {
+    const unsubscribe = store.subscribe(forceUpdate);
+    return () => {
+      unsubscribe();
+    };
+    // eslint-disable-next-line
+  }, []);
 
   const { accessToken } = useContext(AuthenticationContext);
 
-  //   console.log("getCurrentlyEditedTimeBox: ", getCurrentlyEditedTimeBox(state));
-  //   console.log("getTimeBoxById: ", getTimeBoxById(state, 2));
   // eslint-disable-next-line
   useEffect(() => {
     TimeBoxApi.getAllTimeBoxes(accessToken)
@@ -60,6 +67,16 @@ function TimeBoxesMenager() {
       .finally(() => dispatch(loadingIndicatorDisable()));
     // eslint-disable-next-line
   }, []);
+
+  const startTimer = () => {
+    intervalId = window.setInterval(() => {
+      dispatch(startTimerAction());
+    }, 100);
+  };
+
+  const stopTimer = () => {
+    window.clearInterval(intervalId);
+  };
 
   const addTimeBox = timebox => {
     TimeBoxApi.addTimeBox(timebox, accessToken)
@@ -83,18 +100,6 @@ function TimeBoxesMenager() {
     ).then(() => dispatch(timeboxRemove(indexToRemove)));
   };
 
-  const startTimer = () => {
-    this.intervalId = window.setInterval(() => {
-      dispatch(prevState => ({
-        elapsedTimeInSeconds: prevState.elapsedTimeInSeconds + 0.1
-      }));
-    }, 100);
-  };
-
-  const stopTimer = () => {
-    window.clearInterval(this.intervalId);
-  };
-
   const disableEditor = () => {
     dispatch(disableEditorAction());
   };
@@ -104,9 +109,6 @@ function TimeBoxesMenager() {
     editedTotalTimeInMinutes,
     editedIndex
   ) => {
-    console.log("editedIndex", editedIndex);
-    console.log("id", state.editor.id);
-
     const timeBoxToReplace = {
       title: editedTitle,
       totalTimeInMinutes: editedTotalTimeInMinutes,
@@ -115,7 +117,6 @@ function TimeBoxesMenager() {
 
     const editedId = state.editor.id;
 
-    console.log("timeBoxToReplace", timeBoxToReplace, "index", editedIndex);
     TimeBoxApi.replaceTimeBox(timeBoxToReplace, accessToken).then(() =>
       dispatch(
         confirmChangesPath(
@@ -129,26 +130,15 @@ function TimeBoxesMenager() {
     disableEditor();
   };
 
-  const onEdit = () => dispatch({ isEditable: true });
+  const onEdit = () => dispatch(getEditFromCurrent());
 
   const handleStart = indexToUpdate => {
-    dispatch(prevState => {
-      const isTimerStart = prevState.timeboxes.map((_, index) =>
-        index === indexToUpdate ? true : false
-      );
-
-      return { isTimerStart: isTimerStart, isRunning: true };
-    });
+    dispatch(isTimerStart(indexToUpdate));
     startTimer(indexToUpdate);
   };
 
   const handleStop = () => {
-    dispatch({
-      pausesCount: 0,
-      isRunning: false,
-      isPaused: false,
-      elapsedTimeInSeconds: 0
-    });
+    dispatch(stopAction());
     stopTimer();
   };
 
@@ -181,7 +171,7 @@ function TimeBoxesMenager() {
 
     const currentTimeBox = timebox[indexToUpdate];
 
-    dispatch({ type: "SEND_TO_CURRENT", currentTimeBox });
+    dispatch(activeTimer({ ...currentTimeBox, index: indexToUpdate }));
   };
 
   const {
@@ -192,6 +182,7 @@ function TimeBoxesMenager() {
     isEditorEditable
   } = state;
 
+  window.state = state;
   return (
     <div className="TimeBoxesMenager container">
       <div className="content">
@@ -293,9 +284,7 @@ function TimeBoxesMenager() {
             </p>
           </div>
         </div>
-
         <TimeBoxList>
-          {console.log("state", state)}
           {state.timeboxes.map((timebox, i) => {
             const timeBoxProps = {
               id: timebox.id,
@@ -334,7 +323,6 @@ function TimeBoxesMenager() {
       </div>
       <div className="sidebar">
         <TimeBoxCreator addTimeBox={addTimeBox} />
-        {console.log("state.editor.id", state.editor.id)}
         <TimeBoxEditor
           index={state.editor.index}
           id={state.editor.id}
@@ -344,16 +332,16 @@ function TimeBoxesMenager() {
           confirmChanges={confirmChanges}
         />
         <CurrentTimeBox
-          //   id={state.current.id}
-          //   index={state.current.index}
-          //   title={state.current.title}
-          //   totalTimeInMinutes={state.current.totalTimeInMinutes}
+          id={state.current.id}
+          index={state.current.index}
+          title={state.current.title}
+          totalTimeInMinutes={state.current.totalTimeInMinutes}
           isCurrentEditable={state.isCurrentEditable}
           elapsedTimeInSeconds={elapsedTimeInSeconds}
           pausesCount={pausesCount}
           isPaused={isPaused}
           isRunning={isRunning}
-          handleStart={() => handleStart(state.current.indext)}
+          handleStart={() => handleStart(state.current.index)}
           handleStop={handleStop}
           togglePause={togglePause}
           onEdit={onEdit}
@@ -363,5 +351,18 @@ function TimeBoxesMenager() {
   );
 }
 // TimeBoxesMenager.contextType = AuthenticationContext;
+// export default TimeBoxesMenager;
 
-export default TimeBoxesMenager;
+// export default connect(mapStateToProps)(TimeBoxesMenager);
+
+const mapStateToProps = state => {
+  return { state };
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  console.log("mapDispatchToProps", ownProps);
+  const add = () => dispatch(timeboxAdd(ownProps.addedTimeBox));
+  return { add };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TimeBoxesMenager);

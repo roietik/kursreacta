@@ -39,7 +39,6 @@ export function timeboxesReducer(state = initialState, action = {}) {
         index === indexToUpdate ? updatedTimebox : timebox
       );
       const timeboxToEdit = timeboxes[indexToUpdate];
-      console.log("timeboxToEdit", timeboxToEdit);
 
       return {
         ...state,
@@ -52,11 +51,10 @@ export function timeboxesReducer(state = initialState, action = {}) {
       const {
         editedTitle,
         editedTotalTimeInMinutes,
+        // eslint-disable-next-line
         editedId,
         editedIndex
       } = action;
-
-      console.log(editedId);
 
       const timeboxes = state.timeboxes.map((timebox, index) =>
         index === editedIndex
@@ -78,15 +76,45 @@ export function timeboxesReducer(state = initialState, action = {}) {
         editor: { title: "", totalTimeInMinutes: "", id: "", index: "" }
       };
     }
-    case "SEND_TO_CURRENT": {
-      const { currentTimeBox } = action;
-      console.log("SEND_TO_CURRENT", currentTimeBox);
-      //   return {
-      //     current: { index: indexToUpdate, ...timebox[indexToUpdate] },
-      //     isCurrentEditable: true
-      //   };
-      return "send";
+    case "CURRENT_EDIT": {
+      return {
+        ...state,
+        isEditable: false,
+        editor: {
+          index: state.current.index,
+          id: state.current.id,
+          title: state.current.title,
+          totalTimeInMinutes: state.current.totalTimeInMinutes
+        },
+        isEditorEditable: true,
+        isCurrentEditable: false
+      };
     }
+    case "ACTIVE_TIMER": {
+      const { currentTimeBox } = action;
+
+      return {
+        ...state,
+        current: { ...currentTimeBox },
+        isCurrentEditable: true
+      };
+    }
+    case "IS_TIMER_START": {
+      const { indexToUpdate } = action;
+      const isTimerStart = state.timeboxes.map((_, index) =>
+        index === indexToUpdate ? true : false
+      );
+
+      return { ...state, isTimerStart: isTimerStart, isRunning: true };
+    }
+    case "START_ACTION": {
+      const { time } = action;
+      return {
+        ...state,
+        elapsedTimeInSeconds: time
+      };
+    }
+
     case "LOADING_INDICATOR_DISABLE":
       return { ...state, isLoading: false };
     case "DISABLE_EDITOR": {
@@ -94,6 +122,15 @@ export function timeboxesReducer(state = initialState, action = {}) {
         ...state,
         isEditorEditable: false,
         editor: { index: "", id: "", title: "", totalTimeInMinutes: "" }
+      };
+    }
+    case "STOP_ACTION": {
+      return {
+        ...state,
+        pausesCount: 0,
+        isRunning: false,
+        isPaused: false,
+        elapsedTimeInSeconds: 0
       };
     }
     case "ERROR_SET":
@@ -108,7 +145,7 @@ export function timeboxesReducer(state = initialState, action = {}) {
 // konwencja getValue areItems/isItem => true
 // selektory
 
-export const getAllTimeBoxesFromState = state => state.timeboxes;
+export const getAllTimeBoxesSelector = state => state.timeboxes;
 export const areTimeBoxesLoading = state => state.isLoading;
 export const getAllTimeBoxesLoadingError = state => state.isError;
 
