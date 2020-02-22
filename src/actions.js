@@ -1,3 +1,4 @@
+import TimeBoxApi from "./api/FetchTimeBoxesApi";
 export const timeboxesLoad = timeboxes => ({
   type: "TIMEBOXES_LOAD",
   timeboxes
@@ -47,3 +48,53 @@ export const startTimerAction = () => ({
 });
 export const stopAction = () => ({ type: "STOP_ACTION" });
 export const getEditFromCurrent = () => ({ type: "CURRENT_EDIT" });
+export const fetchAllTimeBoxesRemotely = accessToken => dispatch => {
+  TimeBoxApi.getAllTimeBoxes(accessToken)
+    .then(timeboxes => {
+      dispatch(timeboxesLoad(timeboxes));
+    })
+    .catch(() => dispatch(errorSet()))
+    .finally(() => dispatch(loadingIndicatorDisable()));
+};
+export const removeTimeBoxRemotely = (
+  indexToRemove,
+  accessToken,
+  timebox
+) => dispatch => {
+  TimeBoxApi.removeTimeBox(timebox, accessToken).then(() =>
+    dispatch(timeboxRemove(indexToRemove))
+  );
+};
+export const addTimeBoxRemotely = (timebox, accessToken) => dispatch => {
+  TimeBoxApi.addTimeBox(timebox, accessToken)
+    .then(addedTimeBox => dispatch(timeboxAdd(addedTimeBox)))
+    .catch(err => console.log(err));
+};
+export const replaceTimeBoxRemotely = (
+  indexToUpdate,
+  timeBoxToUpdate,
+  accessToken
+) => dispatch => {
+  TimeBoxApi.replaceTimeBox(timeBoxToUpdate, accessToken).then(updatedTimebox =>
+    dispatch(timeboxReplace(updatedTimebox, indexToUpdate))
+  );
+};
+export const confirmChangesRemotely = (
+  timeBoxToReplace,
+  accessToken,
+  editedTitle,
+  editedTotalTimeInMinutes,
+  editedId,
+  editedIndex
+) => dispatch => {
+  TimeBoxApi.replaceTimeBox(timeBoxToReplace, accessToken).then(() =>
+    dispatch(
+      confirmChangesPath(
+        editedTitle,
+        editedTotalTimeInMinutes,
+        editedId,
+        editedIndex
+      )
+    )
+  );
+};

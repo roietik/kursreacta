@@ -1,7 +1,6 @@
-import React, { useEffect, useContext, useState } from "react";
-import TimeBoxApi from "../api/FetchTimeBoxesApi";
+import React, { useEffect, useContext } from "react";
 import AuthenticationContext from "../contexts/AuthenticationContext";
-import { ReactReduxContext, connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import TimeBoxList from "./TimeBoxList";
 import TimeBoxEditor from "./TimeBoxEditor";
@@ -14,13 +13,11 @@ import {
 } from "../../src/reducers";
 
 import {
-  timeboxesLoad,
-  errorSet,
-  loadingIndicatorDisable,
-  timeboxAdd,
-  timeboxReplace,
-  timeboxRemove,
-  confirmChangesPath,
+  fetchAllTimeBoxesRemotely,
+  addTimeBoxRemotely,
+  replaceTimeBoxRemotely,
+  removeTimeBoxRemotely,
+  confirmChangesRemotely,
   disableEditorAction,
   activeTimer,
   isTimerStart,
@@ -32,39 +29,13 @@ import {
 import "../sass/TimeBoxesMenager.scss";
 
 let intervalId = null;
-function useForceUpdate() {
-  // eslint-disable-next-line
-  const [updateCounter, setUpdateCounter] = useState(0);
-  function forceUpdate() {
-    setUpdateCounter(prevCounter => prevCounter + 0.1);
-  }
-  return forceUpdate;
-}
-function TimeBoxesMenager(props) {
-  // eslint-disable-next-line
-  const { store } = useContext(ReactReduxContext);
-  const forceUpdate = useForceUpdate();
-  const state = store.getState();
-  const dispatch = store.dispatch;
-  useEffect(() => {
-    const unsubscribe = store.subscribe(forceUpdate);
-    return () => {
-      unsubscribe();
-    };
-    // eslint-disable-next-line
-  }, []);
 
+function TimeBoxesMenager() {
+  const dispatch = useDispatch();
   const { accessToken } = useContext(AuthenticationContext);
-
-  // eslint-disable-next-line
+  const state = useSelector(state => state);
   useEffect(() => {
-    TimeBoxApi.getAllTimeBoxes(accessToken)
-      .then(timeboxes => {
-        dispatch(timeboxesLoad(timeboxes));
-        store.dispatch(timeboxesLoad(timeboxes));
-      })
-      .catch(() => dispatch(errorSet()))
-      .finally(() => dispatch(loadingIndicatorDisable()));
+    dispatch(fetchAllTimeBoxesRemotely(accessToken));
     // eslint-disable-next-line
   }, []);
 
@@ -78,30 +49,19 @@ function TimeBoxesMenager(props) {
     window.clearInterval(intervalId);
   };
 
+  const removeTimeBox = indexToRemove => {
+    const timebox = state.timeboxes[indexToRemove];
+    dispatch(removeTimeBoxRemotely(indexToRemove, accessToken, timebox));
+  };
+
   const addTimeBox = timebox => {
-    TimeBoxApi.addTimeBox(timebox, accessToken)
-      .then(addedTimeBox => dispatch(timeboxAdd(addedTimeBox)))
-      .catch(err => console.log(err));
+    dispatch(addTimeBoxRemotely(timebox, accessToken));
   };
 
   const editTimeBox = (indexToUpdate, timeBoxToUpdate) => {
-    TimeBoxApi.replaceTimeBox(
-      timeBoxToUpdate,
-      accessToken
-    ).then(updatedTimebox =>
-      dispatch(timeboxReplace(updatedTimebox, indexToUpdate))
+    dispatch(
+      replaceTimeBoxRemotely(indexToUpdate, timeBoxToUpdate, accessToken)
     );
-  };
-
-  const removeTimeBox = indexToRemove => {
-    TimeBoxApi.removeTimeBox(
-      state.timeboxes[indexToRemove],
-      accessToken
-    ).then(() => dispatch(timeboxRemove(indexToRemove)));
-  };
-
-  const disableEditor = () => {
-    dispatch(disableEditorAction());
   };
 
   const confirmChanges = (
@@ -117,17 +77,21 @@ function TimeBoxesMenager(props) {
 
     const editedId = state.editor.id;
 
-    TimeBoxApi.replaceTimeBox(timeBoxToReplace, accessToken).then(() =>
-      dispatch(
-        confirmChangesPath(
-          editedTitle,
-          editedTotalTimeInMinutes,
-          editedId,
-          editedIndex
-        )
+    dispatch(
+      confirmChangesRemotely(
+        timeBoxToReplace,
+        accessToken,
+        editedTitle,
+        editedTotalTimeInMinutes,
+        editedId,
+        editedIndex
       )
     );
     disableEditor();
+  };
+
+  const disableEditor = () => {
+    dispatch(disableEditorAction());
   };
 
   const onEdit = () => dispatch(getEditFromCurrent());
@@ -350,19 +314,5 @@ function TimeBoxesMenager(props) {
     </div>
   );
 }
-// TimeBoxesMenager.contextType = AuthenticationContext;
-// export default TimeBoxesMenager;
 
-// export default connect(mapStateToProps)(TimeBoxesMenager);
-
-const mapStateToProps = state => {
-  return { state };
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-  console.log("mapDispatchToProps", ownProps);
-  const add = () => dispatch(timeboxAdd(ownProps.addedTimeBox));
-  return { add };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TimeBoxesMenager);
+export default TimeBoxesMenager;

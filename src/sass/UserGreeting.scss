@@ -1,0 +1,12 @@
+.header-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  p {
+    justify-self: right;
+    color: white;
+    a {
+      color: #1f2025;
+    }
+  }
+}
